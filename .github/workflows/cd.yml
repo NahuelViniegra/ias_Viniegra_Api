@@ -1,0 +1,37 @@
+name: Continuous Delivery (CD)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy-dev:
+    name: Deploy to DEV Environment
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook (DEV)
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_DEV }}"
+
+  deploy-qa:
+    name: Deploy to QA Environment
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook (QA)
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_QA }}"
+
+  deploy-prd:
+    name: Deploy to PRD Environment
+    if: github.ref == 'refs/heads/main'
+    needs: deploy-qa
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook (PRD)
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PRD }}"

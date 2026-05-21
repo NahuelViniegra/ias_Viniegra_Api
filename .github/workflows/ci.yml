@@ -1,0 +1,44 @@
+name: Continuous Integration (CI)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Run Tests & Security Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Create Virtual Environment and Install Dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements-dev.txt
+
+    - name: Run Bandit Security Analysis
+      run: |
+        source venv/bin/activate
+        bandit -r app/
+
+    - name: Run Pytest (Unit & Integration)
+      run: |
+        source venv/bin/activate
+        pytest --cov=app tests/unit/ tests/integration/
+
+    - name: Run Dynamic Security Tests (Only on PR develop -> main)
+      if: github.base_ref == 'main' && github.head_ref == 'develop'
+      run: |
+        source venv/bin/activate
+        pytest tests/security/
