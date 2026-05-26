@@ -1,5 +1,6 @@
 import os
 import sqlite3
+# pyrefly: ignore [missing-import]
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -119,7 +120,7 @@ def get_professor(prof_id):
     conn.close()
     if row:
         return jsonify(dict(row)), 200
-    return jsonify({"error": "Professor not found"}), 404
+    return jsonify({"error": "Profesor no encontrado"}), 404
 
 @app.route('/professors', methods=['POST'])
 def create_professor():
