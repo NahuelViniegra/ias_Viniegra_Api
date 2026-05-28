@@ -120,7 +120,7 @@ def get_professor(prof_id):
     conn.close()
     if row:
         return jsonify(dict(row)), 200
-    return jsonify({"error": "Profesor no encontrado"}), 404
+    return jsonify({"error": "Teacher not found"}), 404
 
 @app.route('/professors', methods=['POST'])
 def create_professor():
